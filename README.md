@@ -83,7 +83,7 @@ WebSockets é um protocolo de comunicação bidirecional em tempo real que opera
 
 ## Referências
 
-Fette, I., & Melnikov, A. (2011). The WebSocket Protocol. IETF RFC 6455.
-Wang, V., Salim, F., & Moskovits, P. (2013). The Definitive Guide to HTML5 WebSocket. Apress.
-Pimentel, V., & Nickerson, B. G. (2012). Communicating and displaying real-time data with WebSocket. IEEE Internet Computing, 16(4), 45-53.
-Loreto, S., Saint-Andre, P., Salsano, S., & Wilkins, G. (2011). Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP. IETF RFC 6202.
+- Fette, I., & Melnikov, A. (2011). The WebSocket Protocol. IETF RFC 6455.
+- Wang, V., Salim, F., & Moskovits, P. (2013). The Definitive Guide to HTML5 WebSocket. Apress.
+- Pimentel, V., & Nickerson, B. G. (2012). Communicating and displaying real-time data with WebSocket. IEEE Internet Computing, 16(4), 45-53.
+- Loreto, S., Saint-Andre, P., Salsano, S., & Wilkins, G. (2011). Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP. IETF RFC 6202.
