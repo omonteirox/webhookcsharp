@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Notification Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        #groupInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #startButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #startButton:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #notifications {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notification {
+            background-color: #e9f5ff;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .error {
+            background-color: #ffebee;
+            border-color: #ffcdd2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebSocket Notification Client</h1>
+        <input type="text" id="groupInput" placeholder="Escreva o nome de um grupo (e.g., 'Zeca Baleiro')">
+        <button id="startButton">Começar a ouvir</button>
+        <div id="notifications"></div>
+    </div>
+
+    <script>
+        let socket;
+        const groupInput = document.getElementById('groupInput');
+        const startButton = document.getElementById('startButton');
+        const notifications = document.getElementById('notifications');
+
+        startButton.addEventListener('click', () => {
+            const group = groupInput.value.trim();
+            if (group) {
+                if (socket) {
+                    socket.close();
+                }
+                connectWebSocket(group);
+                startButton.textContent = 'Ouvindo...';
+                startButton.disabled = true;
+                groupInput.disabled = true;
+            } else {
+                alert('Por favor, digite um nome de grupo');
+            }
+        });
+
+        function connectWebSocket(group) {
+            socket = new WebSocket(`ws://localhost:5183/registerSocket?group=${encodeURIComponent(group)}`);
+
+            socket.onopen = function(e) {
+                console.log("[open] Conexão estabelecida");
+                addNotification(`Conectado no servidor, aguardando notificações para o grupo: ${group}`);
+            };
+
+            socket.onmessage = function(event) {
+                console.log(`[message] Mensagem recebida do servidor: ${event.data}`);
+                addNotification(event.data);
+            };
+
+            socket.onclose = function(event) {
+                if (event.wasClean) {
+                    console.log(`[close] Conexão fechada, código=${event.code} razão=${event.reason}`);
+                    addNotification(`Conexão fechada: ${event.reason}`);
+                } else {
+                    console.log('[close] Conexão morta');
+                    addNotification("Conexão perdida. Tente reconectar.", true);
+                }
+                startButton.textContent = 'Começar a ouvir';
+                startButton.disabled = false;
+                groupInput.disabled = false;
+            };
+
+            socket.onerror = function(error) {
+                console.log(`[error] ${error.message}`);
+                addNotification(`Erro: ${error.message}`, true);
+                startButton.textContent = 'Começar a ouvir';
+                startButton.disabled = false;
+                groupInput.disabled = false;
+            };
+        }
+
+        function addNotification(message, isError = false) {
+            const notificationElement = document.createElement('div');
+            notificationElement.classList.add('notification');
+            if (isError) {
+                notificationElement.classList.add('error');
+            }
+            notificationElement.textContent = message;
+            notifications.prepend(notificationElement);
+        }
+    </script>
+</body>
+</html>
